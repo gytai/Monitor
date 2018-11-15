@@ -11,7 +11,7 @@ const REDIS = {
 };
 
 const MYSQLDB = {
-    database:"webFramework",
+    database:"monitor",
     username:"root",
     password:"root",
     host:"localhost",
