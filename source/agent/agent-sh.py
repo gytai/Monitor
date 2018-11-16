@@ -125,4 +125,6 @@ if __name__ == '__main__':
     resp = httpPost(SERVER_URL + '/api/node/register', data)
     print('http result:', resp)
 
-    checkStatus()
+    while True:
+        checkStatus()
+        time.sleep(SCHED_TIME)
