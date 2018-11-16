@@ -11,8 +11,8 @@ const REDIS = {
 
 const MYSQLDB = {
     database:"monitor",
-    username:"root",
-    password:"root",
+    username:"monitor",
+    password:"monitor",
     host:"localhost",
     //支持的数据库类型'mysql'|'sqlite'|'postgres'|'mssql'
     dialect:"mysql"
