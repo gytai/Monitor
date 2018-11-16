@@ -12,10 +12,6 @@ const Model = sequelizeInstance.define('linux_report', {
         primaryKey: true,
         autoIncrement: true
     },
-    hostname: {
-        type: Sequelize.STRING(20),
-        comment:'服务器名称'
-    },
     ip: {
         type: Sequelize.STRING(20),
         comment:'服务器Ip'
@@ -56,7 +52,8 @@ const Model = sequelizeInstance.define('linux_report', {
     freezeTableName: true,
     tableName:'linux_report',
     paranoid: false,
-    timestamps: false
+    timestamps: true,
+    updatedAt:false
 });
 
 //生成数据表
@@ -77,9 +74,8 @@ function list(ip,page,size) {
     });
 }
 
-function add(hostname,ip,cpu,mem,disk) {
+function add(ip,cpu,mem,disk) {
     return Model.create({
-        hostname:hostname,
         ip:ip,
         cpu_total:cpu[0],
         cpu_percent:cpu[1],

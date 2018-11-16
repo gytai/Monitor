@@ -7,7 +7,7 @@
 """
 
 import psutil
-import os,time,json
+import os,time
 import sys
 import sched
 import urllib,urllib2
@@ -15,11 +15,14 @@ import smtplib
 from email.header import Header
 from email.mime.text import MIMEText
 import socket
+import platform
 
 from daemon import Daemon
 
-SCHED_TIME = 1 # 单位，秒
+SCHED_TIME = 5 # 单位，秒
 SERVER_URL = "http://localhost:3000"
+SERVER_GROUP = "阿里云-华东"
+SERVER_NAME = "redis-center"
 
 MEM_WARN_LINE = 85
 CPU_WARN_LINE = 90
@@ -30,10 +33,14 @@ EMAIL_PASSWORD = "you email password"
 
 MSG_RECEIVE_LIST = ["test1@qq.com","test2@qq.com"]
 
+def getBaseInfo():
+    release = platform.dist()
+    return release
+
 def getMem():
     data = psutil.virtual_memory()
-    total = data.total
-    free = data.available
+    total = int(data.total / 1024 / 1024)
+    free = int(data.available / 1024 / 1024)
     percent = data.percent
     return [total,free,percent]
 
@@ -45,8 +52,8 @@ def getCpu():
 
 def getDisk():
     data = psutil.disk_usage('/')
-    total = data.total
-    free = data.free
+    total = int(data.total / 1024 / 1024 / 1024)
+    free = int(data.free / 1024 / 1024 / 1024)
     percent = data.percent
     return [total,free,percent]
 
@@ -63,10 +70,11 @@ def getIp():
     hostname = socket.gethostname()
     # 获取本机ip
     ip = socket.gethostbyname(hostname)
-    return hostname,ip
+    netIp = urllib2.urlopen('http://ip.42.pl/raw').read()
+    return hostname,ip,netIp
 
 def sendMail(content):
-    hostname,ip = getIp()
+    hostname,ip,netIp = getIp()
     subject = '[Meyer服务器监控]%s(%s)服务器监控预警' % (hostname,ip)
     username = EMAIL_ACCOUNT
     password = EMAIL_PASSWORD
@@ -90,13 +98,15 @@ def checkStatus():
     mem = getMem()
     cpu = getCpu()
     disk = getDisk()
-    memStr = "Memory Total:%dM Free:%dM usage:%d" % (mem[0] / 1024 / 1024, mem[1] / 1024 / 1024, int(round(mem[2]))) + '%'
-    diskStr = "Disk Total:%dG Free:%dG usage:%d" % (disk[0] / 1024 / 1024 / 1024, disk[1] / 1024 / 1024 / 1024, int(round(disk[2]))) + '%'
+    hostname,ip,netIp = getIp()
+    memStr = "Memory Total:%dM Free:%dM usage:%d" % (mem[0] , mem[1] , int(round(mem[2]))) + '%'
+    diskStr = "Disk Total:%dG Free:%dG usage:%d" % (disk[0], disk[1] , int(round(disk[2]))) + '%'
     cpuStr = "CPU count:%d usage:%0.2f" % (cpu[0], cpu[1]) + '%'
-    print(cpuStr,memStr,diskStr)
-    data = {'mem':mem,'cpu':cpu,'disk':disk}
+
+    data = {'ip':netIp,'mem':mem,'cpu':cpu,'disk':disk}
     resp = httpPost(SERVER_URL + '/api/report',data)
     print('http result:',resp)
+
     if mem[2] >= MEM_WARN_LINE or disk[2] >= DISK_WARN_LINE or cpu[1] >= CPU_WARN_LINE:
         sendMail(cpuStr + "<br/>" +memStr + "<br/>" + diskStr)
     schedule.enter(SCHED_TIME, 0, checkStatus, ())
@@ -112,6 +122,15 @@ if __name__ == '__main__':
     schedule = sched.scheduler(time.time, time.sleep)
     PIDFILE = '/tmp/daemon-sysinfo.pid'
     LOG = '/tmp/daemon-sysinfo.log'
+
+    hostname,ip,netIp = getIp()
+    release = getBaseInfo()
+
+    # 上传服务器基本信息
+    data = {'ip': ip,'netIp':netIp, 'release': release, 'group': SERVER_GROUP, 'nickname': SERVER_NAME, 'hostname': hostname}
+    resp = httpPost(SERVER_URL + '/api/node/register', data)
+    print('http result:', resp)
+
     daemon = taskDaemon(pidfile=PIDFILE, stdout=LOG, stderr=LOG)
     if len(sys.argv) != 2:
         print('Usage: {} [start|stop]'.format(sys.argv[0]))

@@ -11,9 +11,8 @@ router.post('/report', function(req, res, next) {
     let mem = req.body.mem;
     let disk = req.body.disk;
     let ip = req.body.ip;
-    let hostname = req.body.hostname;
 
-    if(!ip || !hostname || !cpu || !mem || !disk){
+    if(!ip || !cpu || !mem || !disk){
         return res.send({code:404, msg:'params not found'});
     }
 
@@ -27,7 +26,7 @@ router.post('/report', function(req, res, next) {
         disk = JSON.parse(disk);
     }
 
-    reportModel.add(hostname,ip,cpu,mem,disk).then( () => {
+    reportModel.add(ip,cpu,mem,disk).then( () => {
         return res.send({code:200, msg:'success'});
     }).catch( (err) => {
         console.error(err);
@@ -54,5 +53,6 @@ router.get('/report', function(req, res, next) {
         return res.send({code:400, msg:'system error'});
     });
 });
+
 
 module.exports = router;
