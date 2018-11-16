@@ -92,7 +92,7 @@ function add(ip,cpu,mem,disk) {
 
 function del(){
     let now = new Date();
-    let times = now.getTime() - 1000*60*60;
+    let times = now.getTime() - 1000*60*30;
 
     return Model.destroy({
         where:{
