@@ -5,6 +5,7 @@
  */
 const Sequelize = require('sequelize');
 const sequelizeInstance = require('../utils/sequelize').sequelizeInstance;
+const common = require('../utils/common');
 
 const Model = sequelizeInstance.define('linux_report', {
     id:  {
@@ -89,6 +90,19 @@ function add(ip,cpu,mem,disk) {
     })
 }
 
+function del(){
+    let now = new Date();
+    let times = now.getTime() - 1000*60*60;
+
+    return Model.destroy({
+        where:{
+            created_at:{
+                $lte:common.dateFormat(new Date(times))
+            }
+        }
+    });
+}
 
 exports.add = add;
 exports.list = list;
+exports.del = del;

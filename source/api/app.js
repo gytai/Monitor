@@ -8,6 +8,8 @@ var session = require('express-session');
 var indexRouter = require('./routes/index');
 var nodeRouter = require('./routes/node');
 
+var taskSchdule = require('./schdule/task');
+
 var app = express();
 var ejs = require('ejs');
 
@@ -48,5 +50,8 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+// 定时删除多余的日志，只保留最新的一个小时
+taskSchdule.task();
 
 module.exports = app;
