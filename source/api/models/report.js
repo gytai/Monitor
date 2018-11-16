@@ -70,7 +70,8 @@ function list(ip,page,size) {
             ip:ip
         },
         offset:offset,
-        limit:size
+        limit:size,
+        order:[['created_at','desc']]
     });
 }
 

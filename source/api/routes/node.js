@@ -20,7 +20,15 @@ router.post('/register', function(req, res, next) {
         console.error(err);
         return res.send({code:400, msg:'system error'});
     });
+});
 
+router.get('/list', function(req, res, next) {
+    nodeModel.list().then( (data) => {
+        return res.send({code:200, msg:'success',data:data});
+    }).catch( (err) => {
+        console.error(err);
+        return res.send({code:400, msg:'system error'});
+    });
 });
 
 module.exports = router;
