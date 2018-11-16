@@ -19,6 +19,8 @@ import platform
 
 from daemon import Daemon
 
+IS_POST = False
+
 SCHED_TIME = 5 # 单位，秒
 SERVER_URL = "http://localhost:3000"
 SERVER_GROUP = "阿里云-华东"
@@ -58,12 +60,15 @@ def getDisk():
     return [total,free,percent]
 
 def httpPost(url, data):
-    req = urllib2.Request(url)
-    data = urllib.urlencode(data)
-    # enable cookie
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
-    response = opener.open(req, data)
-    return response.read()
+    if IS_POST:
+        req = urllib2.Request(url)
+        data = urllib.urlencode(data)
+        # enable cookie
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
+        response = opener.open(req, data)
+        return response.read()
+    else:
+        return 'if you want to post data,please set IS_POST=True'
 
 def getIp():
     # 获取本机计算机名称
