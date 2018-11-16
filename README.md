@@ -24,4 +24,5 @@ Linux基本信息监控以及报警推送
 
 ## 2.2 运行
 > npm install
+
 > pm2 start bin/www --name monitor
