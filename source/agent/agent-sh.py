@@ -125,5 +125,9 @@ if __name__ == '__main__':
     print('http result:', resp)
 
     while True:
-        checkStatus()
+        try:
+            checkStatus()
+        except:
+            print("ERROR: run checkStatus")
+
         time.sleep(SCHED_TIME)
