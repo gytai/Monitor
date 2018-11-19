@@ -19,7 +19,7 @@ import platform
 IS_POST = True
 
 SCHED_TIME = 5 # 单位，秒
-SERVER_URL = "http://localhost:3005"
+SERVER_URL = "http://localhost:3000"
 SERVER_GROUP = "阿里云-华东"
 SERVER_NAME = "redis-center"
 
