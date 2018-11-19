@@ -7,9 +7,7 @@
 """
 
 import psutil
-import os,time
-import sys
-import sched
+import time
 import urllib,urllib2
 import smtplib
 from email.header import Header
@@ -17,12 +15,11 @@ from email.mime.text import MIMEText
 import socket
 import platform
 
-from daemon import Daemon
 
-IS_POST = False
+IS_POST = True
 
 SCHED_TIME = 5 # 单位，秒
-SERVER_URL = "http://localhost:3000"
+SERVER_URL = "http://spectrum.chinameyer.com:3005"
 SERVER_GROUP = "阿里云-华东"
 SERVER_NAME = "redis-center"
 
