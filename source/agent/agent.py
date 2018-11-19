@@ -35,6 +35,8 @@ EMAIL_PASSWORD = "you email password"
 
 MSG_RECEIVE_LIST = ["test1@qq.com","test2@qq.com"]
 
+NET_IP = ""
+
 def getBaseInfo():
     release = platform.dist()
     return release
@@ -103,12 +105,12 @@ def checkStatus():
     mem = getMem()
     cpu = getCpu()
     disk = getDisk()
-    hostname,ip,netIp = getIp()
+
     memStr = "Memory Total:%dM Free:%dM usage:%d" % (mem[0] , mem[1] , int(round(mem[2]))) + '%'
     diskStr = "Disk Total:%dG Free:%dG usage:%d" % (disk[0], disk[1] , int(round(disk[2]))) + '%'
     cpuStr = "CPU count:%d usage:%0.2f" % (cpu[0], cpu[1]) + '%'
 
-    data = {'ip':netIp,'mem':mem,'cpu':cpu,'disk':disk}
+    data = {'ip':NET_IP,'mem':mem,'cpu':cpu,'disk':disk}
     resp = httpPost(SERVER_URL + '/api/report',data)
     print('http result:',resp)
 
@@ -130,6 +132,7 @@ if __name__ == '__main__':
 
     hostname,ip,netIp = getIp()
     release = getBaseInfo()
+    NET_IP = netIp
 
     # 上传服务器基本信息
     data = {'ip': ip,'netIp':netIp, 'release': release, 'group': SERVER_GROUP, 'nickname': SERVER_NAME, 'hostname': hostname}
